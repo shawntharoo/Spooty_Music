@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import { Jumbotron, Button } from 'reactstrap';
 import Service from '../../service/spotifyAPI';
 import Constants from '../../utils/constants';
@@ -7,21 +6,18 @@ import Constants from '../../utils/constants';
 class Home extends Component {
     constructor(props) {
         super(props);
-
         this.handleClick = this.handleClick.bind(this);
     }
 
     handleClick() {
         var redirrect_url = Constants.REDIRRECT_URL;
         const result = Service.authenticate(redirrect_url);
-  
-      
     }
 
     render() {
         return (
             <div>
-                      <Jumbotron>
+                <Jumbotron>
                     <div className="container">
                         <div className="row row-header">
                             <div className="col-12 col-sm-6">

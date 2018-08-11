@@ -1,24 +1,16 @@
 import Constants from '../utils/constants';
 
 const Service = {
-  searchUrl: (query, limit) => {
-    return `${Constants.SEARCH_URL}?q=${encodeURI(query)}&type=playlist%2Ctrack%2Cartist&limit=${encodeURI(limit)}`;
-  },
-
-  tracksUrl: (artistId) => {
-    return `${Constants.BASE_URL}/artists/${artistId}/top-tracks?country=US&`;
-  },
-
 
   getSearchResult: (query, token, limit) => {
-    let mquery = '"'+ query + '"';
-    let searchUrl = Service.searchUrl(mquery, limit);
+    let mquery = '"' + query + '"';
+    let searchUrl = `${Constants.SEARCH_URL}?q=${encodeURI(mquery)}&type=playlist%2Ctrack%2Cartist&limit=${encodeURI(limit)}`;
     return fetch(searchUrl, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Accept' : 'application/json',
-        'Authorization' : `Bearer ${token}` 
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`
       }
     })
       .then(errorHandling.handleErrors,
@@ -27,7 +19,6 @@ const Service = {
           throw errmess;
         })
   },
-
 
   authenticate: (url) => {
     var client_id = "2d7cd23fd6984ce883ef218fd48c7adf";
@@ -40,7 +31,6 @@ const Service = {
   }
 
 }
-
 
 const errorHandling = {
   handleErrors: (response) => {

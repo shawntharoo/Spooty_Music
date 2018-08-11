@@ -7,7 +7,7 @@ class Search extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { search_value: '', token: null, search_result: null, limit : 10 };
+    this.state = { search_value: '', token: null, search_result: null, limit: 2 };
     this.onInputChange = this.onInputChange.bind(this);
     this.onLimitChange = this.onLimitChange.bind(this);
     this.onSearch = this.onSearch.bind(this);
@@ -25,10 +25,9 @@ class Search extends Component {
         return initial;
       }, {});
     let _token = hash.access_token;
-    if(_token){
+    if (_token) {
       this.setState({ token: _token });
-    }else{
-     
+    } else {
       this.props.history.push('/home')
     }
   }
@@ -37,33 +36,23 @@ class Search extends Component {
     this.setState({ search_value: event.target.value });
   }
 
-  onLimitChange(event){
+  onLimitChange(event) {
     this.setState({ limit: event.target.value });
   }
 
   onSearch(event) {
     console.log(this.state.limit)
-    if(isNaN(this.state.limit) || this.state.limit == ""){
-      this.setState({ limit: 10 });
-     }else{
-      
-     }
+    if (isNaN(this.state.limit) || this.state.limit == "") {
+      this.setState({ limit: 2 });
+    } 
     const result = Service.getSearchResult(this.state.search_value, this.state.token, this.state.limit)
       .then(response => response.json())
       .then(search_result => this.setState({ search_result }))
-      .catch(error => console.log(error));
+      .catch(error => {
+        alert("Invalid token or the token has expired")
+        this.props.history.push('/home')
+      });
     event.preventDefault();
-  }
-
-  handleSearch(artistJSON) {
-    const artist = artistJSON.artists.items[0];
-    if (artist) {
-      this.loadTracks(artist.id);
-      return this.updateProfile(artistJSON)
-    } else {
-      this.displayErrorMessage('Artist not found, please try again');
-      return false;
-    }
   }
 
   render() {
@@ -74,9 +63,9 @@ class Search extends Component {
         <ListGroup>
           <ListGroupItem>
             <form onSubmit={this.onSearch}>
-            <h4 style={{ color: 'red' }}>Search Artists, Playlists and Tracks</h4>
+              <h4 style={{ color: 'red' }}>Search Artists, Playlists and Tracks</h4>
               <input type="text" value={this.state.search_value} onChange={this.onInputChange} style={{ marginTop: 10, marginRight: 10 }} placeholder="Type here ..." />
-              Limit : <input type="text" value={this.state.limit} onChange={this.onLimitChange} style={{ marginTop: 10, marginRight: 10, width:30 }} />
+              Limit : <input type="text" value={this.state.limit} onChange={this.onLimitChange} style={{ marginTop: 10, marginRight: 10, width: 30 }} />
               <button>{icons.magnifyingGlass}</button>
             </form>
           </ListGroupItem>
@@ -99,11 +88,11 @@ class Search extends Component {
                           return (
                             <Media key={artist.id}>
                               <Media left href="#">
-                              { 
-                                artist.images.length != 0 ?
-                                <Media object src={artist.images[0].url} alt="no image" style={{ height: 250 }}/> :
-                                <Media object src="assets/images/no_image.jpg" alt="no image" style={{ height: 250 }}/>
-                              }
+                                {
+                                  artist.images.length != 0 ?
+                                    <Media object src={artist.images[0].url} alt="no image" style={{ height: 250 }} /> :
+                                    <Media object src="assets/images/no_image.jpg" alt="no image" style={{ height: 250 }} />
+                                }
                               </Media>
                               <Media body style={{ marginLeft: 20 }}>
                                 <Media heading>
@@ -117,7 +106,7 @@ class Search extends Component {
                                       <li>{genres}</li>
                                     </ul>
                                   )
-                                }<br/>
+                                }<br />
                                 <h6>Popularity <Badge color="secondary">{artist.popularity}</Badge></h6>
                                 <a target='_blank' href={artist.external_urls.spotify}>
                                   Click here to view the artist from Spotify
@@ -153,14 +142,14 @@ class Search extends Component {
                 <ListGroupItemHeading>Tracks related to "{search_value}"</ListGroupItemHeading>
               </ListGroupItem>
 
-                {
-                  search_result.tracks.items.length != 0 ?
-                    <div>
-                      {
-                        search_result.tracks.items.map((track) => {
-                          return (
-                            <div>
-                            <Media key={track.id}>
+              {
+                search_result.tracks.items.length != 0 ?
+                  <div>
+                    {
+                      search_result.tracks.items.map((track) => {
+                        return (
+                          <div key={track.id}>
+                            <Media>
                               <Media body style={{ marginLeft: 20 }}>
                                 <Media heading>
                                   {track.name}
@@ -172,7 +161,7 @@ class Search extends Component {
                                       <li>{artist.name}</li>
                                     </ul>
                                   )
-                                }<br/>
+                                }<br />
                                 <h6>Album name - {track.album.name} </h6>
                                 <h6>Popularity <Badge color="secondary">{track.popularity}</Badge></h6>
                                 <a target='_blank' href={track.preview_url}>
@@ -180,18 +169,18 @@ class Search extends Component {
                                 </a>
                               </Media>
                             </Media>
-                            <br/>
-                            </div>
-                          )
-                        })
-                      }
-                    </div> :
-                    <ListGroupItem>
-                      <ListGroupItemText>
-                        No Tracks to display
+                            <br />
+                          </div>
+                        )
+                      })
+                    }
+                  </div> :
+                  <ListGroupItem>
+                    <ListGroupItemText>
+                      No Tracks to display
                         </ListGroupItemText>
-                    </ListGroupItem>
-                }
+                  </ListGroupItem>
+              }
             </div>
 
             : <ListGroupItem>
@@ -210,42 +199,42 @@ class Search extends Component {
                 <ListGroupItemHeading>Playlists related to "{search_value}"</ListGroupItemHeading>
               </ListGroupItem>
 
-                {
-                  search_result.playlists.items.length != 0 ?
-                    <div>
-                      {
-                        search_result.playlists.items.map((playlist) => {
-                          return (
-                            <Media key={playlist.id}>
-                              <Media left href="#">
-                              { 
+              {
+                search_result.playlists.items.length != 0 ?
+                  <div>
+                    {
+                      search_result.playlists.items.map((playlist) => {
+                        return (
+                          <Media key={playlist.id}>
+                            <Media left href="#">
+                              {
                                 playlist.images.length != 0 ?
-                                <Media object src={playlist.images[0].url} alt="no image" style={{ height: 250 }}/> :
-                                <Media object src="assets/images/no_image.jpg" alt="no image" style={{ height: 250 }}/>
+                                  <Media object src={playlist.images[0].url} alt="no image" style={{ height: 250 }} /> :
+                                  <Media object src="assets/images/no_image.jpg" alt="no image" style={{ height: 250 }} />
                               }
-                              </Media>
-                              <Media body style={{ marginLeft: 20 }}>
-                                <Media heading>
-                                  {playlist.name}
-                                </Media>
-                                <h6>Total tracks <Badge color="secondary">{playlist.tracks.total}</Badge></h6>
-                                <h6>Owner name - {playlist.owner.display_name}</h6>
-                                <a target='_blank' href={playlist.external_urls.spotify}>
-                                  Click here to view the playlist from Spotify
-                                </a>
-                              </Media>
                             </Media>
-                          )
-                        })
-                      }
-                    </div> :
-                    <ListGroupItem>
-                      <ListGroupItemText>
-                        No Artists to display
+                            <Media body style={{ marginLeft: 20 }}>
+                              <Media heading>
+                                {playlist.name}
+                              </Media>
+                              <h6>Total tracks <Badge color="secondary">{playlist.tracks.total}</Badge></h6>
+                              <h6>Owner name - {playlist.owner.display_name}</h6>
+                              <a target='_blank' href={playlist.external_urls.spotify}>
+                                Click here to view the playlist from Spotify
+                                </a>
+                            </Media>
+                          </Media>
+                        )
+                      })
+                    }
+                  </div> :
+                  <ListGroupItem>
+                    <ListGroupItemText>
+                      No Artists to display
                         </ListGroupItemText>
-                    </ListGroupItem>
-                }
-              </div>
+                  </ListGroupItem>
+              }
+            </div>
 
             : <ListGroupItem>
               <ListGroupItemHeading>Playlists</ListGroupItemHeading>
